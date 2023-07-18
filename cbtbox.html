@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        #user_id {
+            width: 300px;
+            margin-bottom: 10px;
+        }
+
+        #message {
+            width: 300px;
+        }
+
+        #chatbox {
+            width: 300px;
+            height: 200px;
+            border: 1px solid black;
+            overflow: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h3>Chatbot Micro Service</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="user_id" placeholder="Enter user ID"/>
+    <input type="text" id="message" placeholder="Type your question here"/>
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        async function sendMessage() {
+            const userBox = document.getElementById('user_id');
+            const messageBox = document.getElementById('message');
+            const chatBox = document.getElementById('chatbox');
+
+            // Append the user's message to the chat box
+            chatBox.innerHTML += `<p>You: ${messageBox.value}</p>`;
+            
+            // Send the user's message to the server
+            const response = await fetch('http://localhost:8000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_id: userBox.value,
+                    message: messageBox.value
+                })
+            });
+            
+            const data = await response.json();
+
+            // Append the assistant's response to the chat box
+            chatBox.innerHTML += `<p>Assistant: ${data.message}</p>`;
+
+            // Clear the message box
+            messageBox.value = '';
+        }
+    </script>
+</body>
+</html>
