@@ -72,5 +72,5 @@ chatbot-microservice/
 
 
 
-![Sample UI](UI.png)
+![Sample UI](UI.PNG)
 
