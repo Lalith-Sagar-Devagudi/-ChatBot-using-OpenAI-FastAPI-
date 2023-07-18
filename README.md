@@ -72,7 +72,7 @@ chatbot-microservice/
 
 # Usage
 
-Use microservice.ipynb to test and interact with the microservice chatbot. 
+Use `microservice.ipynb` to test and interact with the microservice chatbot. 
 
 ## UI
 ![Sample UI](UI.PNG)
