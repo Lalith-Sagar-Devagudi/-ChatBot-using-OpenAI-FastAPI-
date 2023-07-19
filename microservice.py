@@ -32,11 +32,18 @@ class ChatInput(BaseModel):
     message: str
 
 # Set OpenAI API key
-openai.api_key = "******************"  # set your OpenAI API key in environment variables
+openai.api_key = "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"  # set your OpenAI API key in environment variables
 
 # Connect to MongoDB client
 client = MongoClient(os.getenv("mongodb://localhost:27017"))  # MongoDB connection string
 db = client['chatbot']  # Replace with your database name
+
+@app.get("/")
+async def root():
+    """
+    Function to tell server is running whenevr the base URL http://127.0.0.1:8000 is opened.
+    """
+    return {"message": "Chatbot is running and you can access it at http://127.0.0.1:8000/docs."}
 
 @app.post("/chat")
 async def chat(chat_input: ChatInput) -> dict:
@@ -80,14 +87,13 @@ async def chat(chat_input: ChatInput) -> dict:
 
     # Convert text to speech
     tts = gTTS(text=response.choices[0].message['content'], lang='en')
-    tts.save("output.mp3")
+    tts.save("outputs/output.mp3")
 
     # Speak the response
     engine.say(response.choices[0].message['content'])
     engine.runAndWait()
 
-    return {"message": response.choices[0].message['content']}
-
+    return {"message": response.choices[0].message['content']}  # return the AI response
 
 
 @app.get("/history/{user_id}")
