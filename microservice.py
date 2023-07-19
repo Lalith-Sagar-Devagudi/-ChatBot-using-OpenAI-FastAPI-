@@ -48,7 +48,7 @@ class ChatInput(BaseModel):
     audio: str = "off"
 
 # Set OpenAI API key
-openai.api_key = "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"  # set your OpenAI API key in environment variables
+openai.api_key = "***********"  # set your OpenAI API key in environment variables
 
 # Connect to MongoDB client
 client = MongoClient(os.getenv("MONGO_CONNECTION_STRING"))
