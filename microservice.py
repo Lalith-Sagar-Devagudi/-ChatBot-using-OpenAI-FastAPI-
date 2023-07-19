@@ -45,7 +45,7 @@ class ChatInput(BaseModel):
     """Data model for chat input."""
     user_id: str
     message: str
-    audio: str = "off"
+    audio: bool = False
 
 # Set OpenAI API key
 openai.api_key = "***********"  # set your OpenAI API key in environment variables
@@ -62,16 +62,13 @@ async def root():
     return {"message": "Chatbot is running and you can access it at http://127.0.0.1:8000/docs."}
 
 @app.post("/chat", tags=["chat"])
-async def chat(chat_input: ChatInput, user_id: str ="Enter your User ID ", message: str ="Chat here", audio: bool = False ) -> dict:
+async def chat( user_id: str ="Enter your User ID ", message: str ="Chat here", audio: bool = False ) -> dict:
     """
     Function to handle chat with the bot.
     It saves conversation to the database, calls the AI model to get response,
     converts the response to speech and returns the AI response.
     \n **Audio is False = OFF by default, True = ON**
     """
-    # user_id = chat_input.user_id
-    # message = chat_input.message
-    # audio = chat_input.audio
     
     # Load conversation history from DB
     history = db.conversations.find_one({"user_id": user_id})
