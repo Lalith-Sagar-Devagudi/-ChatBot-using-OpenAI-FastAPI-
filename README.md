@@ -74,7 +74,9 @@ To run the microservice and interact with the bot using the Swagger UI, use the 
 
 1. Ensure that your virtual environment is active, and you have installed all necessary dependencies by following the steps in the Setup section.
 
-2. Run the command:
+2. Then run this command `$env:MONGO_CONNECTION_STRING="mongodb://localhost:27017` to set the environment variable for the MongoDB connection string.
+
+3. Next run the command:
 
    ```bash
    uvicorn microservice:app --reload
