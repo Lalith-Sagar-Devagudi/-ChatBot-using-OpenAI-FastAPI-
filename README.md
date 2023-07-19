@@ -92,13 +92,15 @@ To run the microservice and interact with the bot using the Swagger UI, use the 
    - Send GET requests to the `/history/{user_id}` endpoint to retrieve the conversation history for a specific user. Replace `{user_id}` in the URL with the actual user ID.
    - Send GET requests to the `/audio` endpoint to retrieve the latest response from the bot as an audio file.
 
-
+## Sample UI 2
+![Sample UI1](fastapi1.PNG)
+![Sample UI2](fastapi2.PNG)
 ## Usage 2
 
 Use `microservice.ipynb` to test and interact with the microservice chatbot. 
 
-## UI
-![Sample UI](UI.PNG)
+## Sample UI 2
+![Sample UI3](UI.PNG)
 
 
 
