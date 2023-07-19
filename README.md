@@ -24,7 +24,6 @@ The repository has the following structure:
 
 ```
 chatbot-microservice/
-  |- .venv/                   # Virtual environment directory
   |- outputs/                     # Sample outputs folder
   |   |- history.txt              # History text of the given user
   |   |- output.mp3                 # Sample response audio file
