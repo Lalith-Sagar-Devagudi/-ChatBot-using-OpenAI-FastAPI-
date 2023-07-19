@@ -10,7 +10,22 @@ from pymongo.collection import Collection
 from pydantic import BaseModel
 import pyttsx3
 
-app = FastAPI()
+tags_metadata = [
+    {
+        "name": "chat",
+        "description": "You can chat here.",
+    },
+    {
+        "name": "history",
+        "description": "History of conversations by the user.",
+    },
+    {
+        "name": "audio",
+        "description": "Download audio file of the most recent OpenAI Bot response.",
+    },
+]
+
+app = FastAPI( openapi_tags=tags_metadata, title="Chatbot Microservice API", description="API to chat with an AI chatbot", version="1.0.0")
 
 origins = ["http://localhost:8001"]  # adjust this to match your actual domain
 
@@ -30,30 +45,33 @@ class ChatInput(BaseModel):
     """Data model for chat input."""
     user_id: str
     message: str
+    audio: str = "off"
 
 # Set OpenAI API key
-openai.api_key = "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"  # set your OpenAI API key in environment variables
+openai.api_key = "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"  # set your OpenAI API key in environment variables
 
 # Connect to MongoDB client
-client = MongoClient(os.getenv("mongodb://localhost:27017"))  # MongoDB connection string
+client = MongoClient(os.getenv("MONGO_CONNECTION_STRING"))
 db = client['chatbot']  # Replace with your database name
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def root():
     """
     Function to tell server is running whenevr the base URL http://127.0.0.1:8000 is opened.
     """
     return {"message": "Chatbot is running and you can access it at http://127.0.0.1:8000/docs."}
 
-@app.post("/chat")
-async def chat(chat_input: ChatInput) -> dict:
+@app.post("/chat", tags=["chat"])
+async def chat(chat_input: ChatInput, user_id: str ="Enter your User ID ", message: str ="Chat here", audio: bool = False ) -> dict:
     """
     Function to handle chat with the bot.
     It saves conversation to the database, calls the AI model to get response,
     converts the response to speech and returns the AI response.
+    \n **Audio is False = OFF by default, True = ON**
     """
-    user_id = chat_input.user_id
-    message = chat_input.message
+    # user_id = chat_input.user_id
+    # message = chat_input.message
+    # audio = chat_input.audio
     
     # Load conversation history from DB
     history = db.conversations.find_one({"user_id": user_id})
@@ -85,18 +103,19 @@ async def chat(chat_input: ChatInput) -> dict:
     history['conversation'].append(new_messages)
     db.conversations.update_one({"user_id": user_id}, {"$set": history}, upsert=True)
 
-    # Convert text to speech
-    tts = gTTS(text=response.choices[0].message['content'], lang='en')
-    tts.save("outputs/output.mp3")
+    # Convert text to speech and speak the response only if audio was requested
+    if audio:
+            tts = gTTS(text=response.choices[0].message['content'], lang='en')
+            tts.save("outputs/output.mp3")
 
-    # Speak the response
-    engine.say(response.choices[0].message['content'])
-    engine.runAndWait()
+            # Speak the response
+            engine.say(response.choices[0].message['content'])
+            engine.runAndWait()
 
     return {"message": response.choices[0].message['content']}  # return the AI response
 
 
-@app.get("/history/{user_id}")
+@app.get("/history/{user_id}", tags=["history"])
 async def get_history(user_id: str) -> FileResponse:
     """
     Function to get chat history for a given user id.
@@ -116,7 +135,7 @@ async def get_history(user_id: str) -> FileResponse:
     # Return the file as a response
     return FileResponse("outputs/history.txt", media_type="text/plain", filename=f"{user_id}_history.txt")
 
-@app.get("/audio")
+@app.get("/audio", tags=["audio"])
 async def get_audio() -> FileResponse:
     """
     Function to return the most recent AI response as audio file.
